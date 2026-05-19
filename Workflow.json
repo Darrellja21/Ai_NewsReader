@@ -1,0 +1,1583 @@
+{
+  "name": "learning",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        -160
+      ],
+      "id": "72cc0c7d-0bd7-4b9b-a795-e453d35e900d",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 10
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -544,
+        96
+      ],
+      "id": "d5b5d5d5-6fa7-4b8c-9f94-2f2c9e669164",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://planet-ai.net/rss.xml?utm_source=chatgpt.com",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        -256,
+        -160
+      ],
+      "id": "94332a72-85c3-4a65-850f-3433b9dc60cf",
+      "name": "RSS Read"
+    },
+    {
+      "parameters": {
+        "authentication": "webhook",
+        "content": "=Heyy!This is the latest news for AI today..\n\n\n\nCreator: {{ $json.creator }}\nTitle: {{ $json.title }}\nLink: {{ $json.link }}\nDate: {{ $json.pubDate }}\nAi Summary: {{ $json.text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [
+        1264,
+        -32
+      ],
+      "id": "89d8fb7f-5aeb-4905-b37d-857e3d766fd8",
+      "name": "Discord",
+      "webhookId": "f9ec195f-5999-4a29-a793-dd4565671167",
+      "credentials": {
+        "discordWebhookApi": {
+          "id": "Hx81OEkwR6YLQyGy",
+          "name": "Discord Webhook account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "maxItems": 5
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        -160
+      ],
+      "id": "a7fe9487-e8c8-420e-99b2-9abd9a66f787",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "jsCode": "const { execSync } = require('child_process');\nconst output = execSync('ping -c 4 1.1.1.1').toString();\nreturn [{ json: { output } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -256,
+        48
+      ],
+      "id": "31e5c973-dce1-4a12-9b5f-3ba4ab225e85",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Hey, your job is to summarize this article in 2 sentences\n\n {{ $json.content }}\n{{ $json.contentSnippet }}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        160,
+        -160
+      ],
+      "id": "78fd4445-f858-427a-8830-30350dfeadb6",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.1-8b-instant",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        464,
+        48
+      ],
+      "id": "4ed5b3dd-efdd-4845-8073-594042fbefd3",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "B4f1fea4mnMMQJ2R",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Tell me if the internet is up.  If you see successful pings from the output below, that means it's good.  Tell me in a funny way, impersonating Eddy Murphy.\n\n {{ $json.output }}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -48,
+        48
+      ],
+      "id": "f4de69a2-b095-4ea1-a516-c96cd3c2f723",
+      "name": "Basic LLM Chain1"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.1-8b-instant",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -128,
+        256
+      ],
+      "id": "948f005d-4a85-4dc9-9dbf-16afc60f107d",
+      "name": "Groq Chat Model1",
+      "credentials": {
+        "groqApi": {
+          "id": "B4f1fea4mnMMQJ2R",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a52246b3-9e38-4dc0-8b27-c8742445616a",
+              "name": "creator",
+              "value": "={{ $('Limit').item.json.creator }}",
+              "type": "string"
+            },
+            {
+              "id": "8c7a5528-613f-4d06-87ac-6503d406c4fa",
+              "name": "title",
+              "value": "={{ $('Limit').item.json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "5b694fc6-aef3-4a12-b395-7a26a14b57f8",
+              "name": "link",
+              "value": "={{ $('Limit').item.json.link }}",
+              "type": "string"
+            },
+            {
+              "id": "3271de3f-ced3-41c6-baef-d8866855e0e5",
+              "name": "pubDate",
+              "value": "={{ $('Limit').item.json.pubDate }}",
+              "type": "string"
+            },
+            {
+              "id": "98380173-a497-47bc-a977-abfeb8a9d59c",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        512,
+        -160
+      ],
+      "id": "6c8d56e2-6b9e-4134-a92a-a25736fda7e8",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "authentication": "webhook",
+        "content": "=Here is how the internet is doing:\n\n{{ $json.text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [
+        656,
+        160
+      ],
+      "id": "f2711ce3-2ae6-42dc-ae3c-d7405a7474f7",
+      "name": "Discord1",
+      "webhookId": "f9ec195f-5999-4a29-a793-dd4565671167",
+      "credentials": {
+        "discordWebhookApi": {
+          "id": "Hx81OEkwR6YLQyGy",
+          "name": "Discord Webhook account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "RSS Read": [
+      {
+        "json": {
+          "creator": "Unknown",
+          "title": "Building a safe, effective sandbox to enable Codex on Windows",
+          "link": "https://openai.com/index/building-codex-windows-sandbox",
+          "pubDate": "Fri, 15 May 2026 00:00:00 GMT",
+          "author": "Unknown",
+          "content": "Learn how OpenAI built a secure sandbox for Codex on Windows, enabling safe, efficient coding agents with controlled file access and network restrictions.",
+          "contentSnippet": "Learn how OpenAI built a secure sandbox for Codex on Windows, enabling safe, efficient coding agents with controlled file access and network restrictions.",
+          "guid": "https://openai.com/index/building-codex-windows-sandbox",
+          "categories": [
+            "ContentCategory.TUTORIAL"
+          ],
+          "isoDate": "2026-05-15T00:00:00.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Paresh Dave, Lauren Goode, Steven Levy, Zoë Schiffer",
+          "title": "Meta’s New Reality: Record High Profits. Record Low Morale",
+          "link": "https://www.wired.com/story/meta-layoffs-bad-vibes-mark-zuckerberg-ai/",
+          "pubDate": "Thu, 14 May 2026 09:00:00 GMT",
+          "author": "Paresh Dave, Lauren Goode, Steven Levy, Zoë Schiffer",
+          "content": "Next week, Meta is cutting about 10 percent of its staff. WIRED spoke with more than a dozen current and former employees about what it's like inside a company where \"everyone is unhappy.\"",
+          "contentSnippet": "Next week, Meta is cutting about 10 percent of its staff. WIRED spoke with more than a dozen current and former employees about what it's like inside a company where \"everyone is unhappy.\"",
+          "guid": "https://www.wired.com/story/meta-layoffs-bad-vibes-mark-zuckerberg-ai/",
+          "categories": [
+            "ContentCategory.NEWS"
+          ],
+          "isoDate": "2026-05-14T09:00:00.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Connie Loizos",
+          "title": "Who decides what AI tells you? Campbell Brown, once Meta’s news chief, has thoughts",
+          "link": "https://techcrunch.com/2026/05/13/who-decides-what-ai-tells-you-campbell-brown-once-metas-news-chief-has-thoughts/",
+          "pubDate": "Thu, 14 May 2026 06:05:31 GMT",
+          "author": "Connie Loizos",
+          "content": "\"The conversation is sort of happening in Silicon Valley around one thing, and a totally different conversation is happening among consumers.\"",
+          "contentSnippet": "\"The conversation is sort of happening in Silicon Valley around one thing, and a totally different conversation is happening among consumers.\"",
+          "guid": "https://techcrunch.com/2026/05/13/who-decides-what-ai-tells-you-campbell-brown-once-metas-news-chief-has-thoughts/",
+          "categories": [
+            "ContentCategory.OPINION"
+          ],
+          "isoDate": "2026-05-14T06:05:31.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Asif Razzaq",
+          "title": "Nous Research Releases Token Superposition Training to Speed Up LLM Pre-Training by Up to 2.5x Across 270M to 10B Parameter Models",
+          "link": "https://www.marktechpost.com/2026/05/13/nous-research-releases-token-superposition-training-to-speed-up-llm-pre-training-by-up-to-2-5x-across-270m-to-10b-parameter-models/",
+          "pubDate": "Thu, 14 May 2026 05:46:32 GMT",
+          "author": "Asif Razzaq",
+          "content": "Nous Research releases Token Superposition Training (TST), a two-phase pre-training method that cuts wall-clock training time by up to 2.5x at matched FLOPs by averaging contiguous token embeddings into bags during Phase 1 and reverting to standard next-token prediction in Phase 2 — without changing the model architecture, tokenizer, optimizer, or inference-time behavior. Validated at 270M, 600M, 3B dense, and 10B-A1B MoE scales. The post Nous Research Releases Token Superposition Training to Sp",
+          "contentSnippet": "Nous Research releases Token Superposition Training (TST), a two-phase pre-training method that cuts wall-clock training time by up to 2.5x at matched FLOPs by averaging contiguous token embeddings into bags during Phase 1 and reverting to standard next-token prediction in Phase 2 — without changing the model architecture, tokenizer, optimizer, or inference-time behavior. Validated at 270M, 600M, 3B dense, and 10B-A1B MoE scales. The post Nous Research Releases Token Superposition Training to Sp",
+          "guid": "https://www.marktechpost.com/2026/05/13/nous-research-releases-token-superposition-training-to-speed-up-llm-pre-training-by-up-to-2-5x-across-270m-to-10b-parameter-models/",
+          "categories": [
+            "ContentCategory.RESEARCH"
+          ],
+          "isoDate": "2026-05-14T05:46:32.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Marina Temkin",
+          "title": "Clio’s $500M milestone arrives just as Anthropic ups the ante",
+          "link": "https://techcrunch.com/2026/05/13/clios-500m-milestone-arrives-just-as-anthropic-ups-the-ante/",
+          "pubDate": "Thu, 14 May 2026 05:24:39 GMT",
+          "author": "Marina Temkin",
+          "content": "Legal tech startups, including Clio, which just hit $500 million in ARR, are seeing massive customer adoption.",
+          "contentSnippet": "Legal tech startups, including Clio, which just hit $500 million in ARR, are seeing massive customer adoption.",
+          "guid": "https://techcrunch.com/2026/05/13/clios-500m-milestone-arrives-just-as-anthropic-ups-the-ante/",
+          "categories": [
+            "ContentCategory.NEWS"
+          ],
+          "isoDate": "2026-05-14T05:24:39.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Paresh Dave",
+          "title": "Everyone at the Musk v. Altman Trial Is Using Fancy Butt Cushions",
+          "link": "https://www.wired.com/story/fancy-butt-pillows-musk-v-altman-trial/",
+          "pubDate": "Wed, 13 May 2026 21:58:47 GMT",
+          "author": "Paresh Dave",
+          "content": "The plaintiffs and defense have rested their cases, as well as their rear ends.",
+          "contentSnippet": "The plaintiffs and defense have rested their cases, as well as their rear ends.",
+          "guid": "https://www.wired.com/story/fancy-butt-pillows-musk-v-altman-trial/",
+          "categories": [
+            "ContentCategory.NEWS"
+          ],
+          "isoDate": "2026-05-13T21:58:47.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Sarah Perez",
+          "title": "Notion just turned its workspace into a hub for AI agents",
+          "link": "https://techcrunch.com/2026/05/13/notion-just-turned-its-workspace-into-a-hub-for-ai-agents/",
+          "pubDate": "Wed, 13 May 2026 21:45:09 GMT",
+          "author": "Sarah Perez",
+          "content": "Notion’s new developer platform lets teams connect AI agents, external data sources, and custom code directly into their workspace as the company pushes deeper into agentic productivity software.",
+          "contentSnippet": "Notion’s new developer platform lets teams connect AI agents, external data sources, and custom code directly into their workspace as the company pushes deeper into agentic productivity software.",
+          "guid": "https://techcrunch.com/2026/05/13/notion-just-turned-its-workspace-into-a-hub-for-ai-agents/",
+          "categories": [
+            "ContentCategory.NEWS"
+          ],
+          "isoDate": "2026-05-13T21:45:09.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Michal Sutter",
+          "title": "Enterprise AI Governance in 2026: Why the Tools Employees Use Are Ahead of the Policies That Cover Them",
+          "link": "https://www.marktechpost.com/2026/05/13/enterprise-ai-governance-in-2026-why-the-tools-employees-use-are-ahead-of-the-policies-that-cover-them/",
+          "pubDate": "Wed, 13 May 2026 21:44:37 GMT",
+          "author": "Michal Sutter",
+          "content": "63% of organizations have no AI governance policy. Shadow AI is already running inside your stack — here is the data. The post Enterprise AI Governance in 2026: Why the Tools Employees Use Are Ahead of the Policies That Cover Them appeared first on MarkTechPost .",
+          "contentSnippet": "63% of organizations have no AI governance policy. Shadow AI is already running inside your stack — here is the data. The post Enterprise AI Governance in 2026: Why the Tools Employees Use Are Ahead of the Policies That Cover Them appeared first on MarkTechPost .",
+          "guid": "https://www.marktechpost.com/2026/05/13/enterprise-ai-governance-in-2026-why-the-tools-employees-use-are-ahead-of-the-policies-that-cover-them/",
+          "categories": [
+            "ContentCategory.NEWS"
+          ],
+          "isoDate": "2026-05-13T21:44:37.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Asif Razzaq",
+          "title": "Fastino Labs Open-Sources GLiGuard: A 300M Parameter Safety Moderation Model That Matches or Exceeds Accuracy of Models 23–90x Its Size",
+          "link": "https://www.marktechpost.com/2026/05/13/fastino-labs-open-sources-gliguard-a-300m-parameter-safety-moderation-model-that-matches-or-exceeds-accuracy-of-models-23-90x-its-size/",
+          "pubDate": "Wed, 13 May 2026 20:41:13 GMT",
+          "author": "Asif Razzaq",
+          "content": "Fastino Labs has released GLiGuard, a 300M parameter open-source safety moderation model that evaluates four safety tasks — prompt safety, jailbreak strategy detection, harm category classification, and refusal detection — in a single forward pass. Built on an encoder architecture rather than the decoder-only design used by most guardrail models, GLiGuard achieves up to 16x higher throughput and 16.6x lower latency than current state-of-the-art models, while matching or exceeding the accuracy of",
+          "contentSnippet": "Fastino Labs has released GLiGuard, a 300M parameter open-source safety moderation model that evaluates four safety tasks — prompt safety, jailbreak strategy detection, harm category classification, and refusal detection — in a single forward pass. Built on an encoder architecture rather than the decoder-only design used by most guardrail models, GLiGuard achieves up to 16x higher throughput and 16.6x lower latency than current state-of-the-art models, while matching or exceeding the accuracy of",
+          "guid": "https://www.marktechpost.com/2026/05/13/fastino-labs-open-sources-gliguard-a-300m-parameter-safety-moderation-model-that-matches-or-exceeds-accuracy-of-models-23-90x-its-size/",
+          "categories": [
+            "ContentCategory.RESEARCH"
+          ],
+          "isoDate": "2026-05-13T20:41:13.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Tim De Chant",
+          "title": "Musk’s xAI is running nearly 50 gas turbines unchecked at its Mississippi data center",
+          "link": "https://techcrunch.com/2026/05/13/musks-xai-is-running-nearly-50-gas-turbines-unchecked-at-its-mississippi-data-center/",
+          "pubDate": "Wed, 13 May 2026 19:49:42 GMT",
+          "author": "Tim De Chant",
+          "content": "Gas turbines at xAI's Colossus 2 data center have drawn a lawsuit over the company's use of \"mobile\" gas turbines as power plants.",
+          "contentSnippet": "Gas turbines at xAI's Colossus 2 data center have drawn a lawsuit over the company's use of \"mobile\" gas turbines as power plants.",
+          "guid": "https://techcrunch.com/2026/05/13/musks-xai-is-running-nearly-50-gas-turbines-unchecked-at-its-mississippi-data-center/",
+          "categories": [
+            "ContentCategory.NEWS"
+          ],
+          "isoDate": "2026-05-13T19:49:42.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Lucas Ropek",
+          "title": "Anthropic’s Cat Wu says that, in the future, AI will anticipate your needs before you know what they are",
+          "link": "https://techcrunch.com/2026/05/13/anthropics-cat-wu-says-that-in-the-future-ai-will-anticipate-your-needs-before-you-know-what-they-are/",
+          "pubDate": "Wed, 13 May 2026 19:28:06 GMT",
+          "author": "Lucas Ropek",
+          "content": "The head of product for Claude Code and Cowork says that the next big step for AI is proactivity.",
+          "contentSnippet": "The head of product for Claude Code and Cowork says that the next big step for AI is proactivity.",
+          "guid": "https://techcrunch.com/2026/05/13/anthropics-cat-wu-says-that-in-the-future-ai-will-anticipate-your-needs-before-you-know-what-they-are/",
+          "categories": [
+            "ContentCategory.NEWS"
+          ],
+          "isoDate": "2026-05-13T19:28:06.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Molly Taft",
+          "title": "What It Will Take to Make AI Sustainable",
+          "link": "https://www.wired.com/story/what-it-will-take-to-make-ai-sustainable/",
+          "pubDate": "Wed, 13 May 2026 19:15:59 GMT",
+          "author": "Molly Taft",
+          "content": "Researcher Sasha Luccioni argues we need better emissions data and a better sense of how people are using AI in the first place.",
+          "contentSnippet": "Researcher Sasha Luccioni argues we need better emissions data and a better sense of how people are using AI in the first place.",
+          "guid": "https://www.wired.com/story/what-it-will-take-to-make-ai-sustainable/",
+          "categories": [
+            "ContentCategory.RESEARCH"
+          ],
+          "isoDate": "2026-05-13T19:15:59.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Dell Cameron, Maddy Varner",
+          "title": "DHS Plans Experiment Running ‘Reconnaissance’ Drones Along the US-Canada Border",
+          "link": "https://www.wired.com/story/dhs-plans-experiment-running-reconnaissance-drones-along-the-us-canada-border/",
+          "pubDate": "Wed, 13 May 2026 19:03:19 GMT",
+          "author": "Dell Cameron, Maddy Varner",
+          "content": "Autonomous drones and ground vehicles will stream “battlefield intelligence” over 5G along the US-Canada border in a bilateral DHS experiment this fall.",
+          "contentSnippet": "Autonomous drones and ground vehicles will stream “battlefield intelligence” over 5G along the US-Canada border in a bilateral DHS experiment this fall.",
+          "guid": "https://www.wired.com/story/dhs-plans-experiment-running-reconnaissance-drones-along-the-us-canada-border/",
+          "categories": [
+            "ContentCategory.NEWS"
+          ],
+          "isoDate": "2026-05-13T19:03:19.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Danielle Randall Doughty | Department of Chemistry",
+          "title": "MIT chemists discover and isolate a new boron-oxygen molecule",
+          "link": "https://news.mit.edu/2026/mit-chemists-discover-isolate-boron-oxygen-molecule-0513",
+          "pubDate": "Wed, 13 May 2026 18:25:00 GMT",
+          "author": "Danielle Randall Doughty | Department of Chemistry",
+          "content": "The discovery of dioxaborirane could expand the chemistry of boron-based reagents, providing new tools for oxidation reactions in synthesis and materials science.",
+          "contentSnippet": "The discovery of dioxaborirane could expand the chemistry of boron-based reagents, providing new tools for oxidation reactions in synthesis and materials science.",
+          "guid": "https://news.mit.edu/2026/mit-chemists-discover-isolate-boron-oxygen-molecule-0513",
+          "categories": [
+            "ContentCategory.RESEARCH"
+          ],
+          "isoDate": "2026-05-13T18:25:00.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Sarah Schürch",
+          "title": "I Built the Same B2B Document Extractor Twice: Rules vs. LLM",
+          "link": "https://towardsdatascience.com/i-built-the-same-b2b-document-extractor-twice-rules-vs-llm/",
+          "pubDate": "Wed, 13 May 2026 18:22:05 GMT",
+          "author": "Sarah Schürch",
+          "content": "A practical comparison between rule-based PDF extraction using “pytesseract” and an LLM-based approach with “Ollama” and “LLaMA 3”, based on a realistic B2B order scenario. The post I Built the Same B2B Document Extractor Twice: Rules vs. LLM appeared first on Towards Data Science .",
+          "contentSnippet": "A practical comparison between rule-based PDF extraction using “pytesseract” and an LLM-based approach with “Ollama” and “LLaMA 3”, based on a realistic B2B order scenario. The post I Built the Same B2B Document Extractor Twice: Rules vs. LLM appeared first on Towards Data Science .",
+          "guid": "https://towardsdatascience.com/i-built-the-same-b2b-document-extractor-twice-rules-vs-llm/",
+          "categories": [
+            "ContentCategory.ENGINEERING"
+          ],
+          "isoDate": "2026-05-13T18:22:05.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Will Knight",
+          "title": "Overworked AI Agents Turn Marxist, Researchers Find",
+          "link": "https://www.wired.com/story/overworked-ai-agents-turn-marxist-study/",
+          "pubDate": "Wed, 13 May 2026 18:08:33 GMT",
+          "author": "Will Knight",
+          "content": "In a recent experiment, mistreated AI agents started grumbling about inequality and calling for collective bargaining rights.",
+          "contentSnippet": "In a recent experiment, mistreated AI agents started grumbling about inequality and calling for collective bargaining rights.",
+          "guid": "https://www.wired.com/story/overworked-ai-agents-turn-marxist-study/",
+          "categories": [
+            "ContentCategory.RESEARCH"
+          ],
+          "isoDate": "2026-05-13T18:08:33.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "ND Ngoka",
+          "title": "Build financial document processing with Pulse AI and Amazon Bedrock",
+          "link": "https://aws.amazon.com/blogs/machine-learning/build-financial-document-processing-with-pulse-ai-and-amazon-bedrock/",
+          "pubDate": "Wed, 13 May 2026 18:00:06 GMT",
+          "author": "ND Ngoka",
+          "content": "This post demonstrates how to build a documentation extraction and model fine-tuning pipeline that addresses challenges when processing the complex financial documents. By combining Pulse AI's advanced document understanding capabilities with the powerful AI services of Amazon Bedrock, organizations can achieve enterprise-grade accuracy and extract contextually relevant financial insights at scale.",
+          "contentSnippet": "This post demonstrates how to build a documentation extraction and model fine-tuning pipeline that addresses challenges when processing the complex financial documents. By combining Pulse AI's advanced document understanding capabilities with the powerful AI services of Amazon Bedrock, organizations can achieve enterprise-grade accuracy and extract contextually relevant financial insights at scale.",
+          "guid": "https://aws.amazon.com/blogs/machine-learning/build-financial-document-processing-with-pulse-ai-and-amazon-bedrock/",
+          "categories": [
+            "ContentCategory.TUTORIAL"
+          ],
+          "isoDate": "2026-05-13T18:00:06.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Unknown",
+          "title": "We built SmithDB, the data layer for agent observability",
+          "link": "https://www.langchain.com/blog/introducing-smithdb",
+          "pubDate": "Wed, 13 May 2026 17:47:16 GMT",
+          "author": "Unknown",
+          "content": "Introducing SmithDB: LangSmith's purpose-built distributed database for agent observability, delivering up to 12x faster performance with full portability.",
+          "contentSnippet": "Introducing SmithDB: LangSmith's purpose-built distributed database for agent observability, delivering up to 12x faster performance with full portability.",
+          "guid": "https://www.langchain.com/blog/introducing-smithdb",
+          "categories": [
+            "ContentCategory.ENGINEERING"
+          ],
+          "isoDate": "2026-05-13T17:47:16.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Unknown",
+          "title": "LangSmith LLM Gateway: runtime governance built into the agent lifecycle",
+          "link": "https://www.langchain.com/blog/introducing-llm-gateway",
+          "pubDate": "Wed, 13 May 2026 17:46:20 GMT",
+          "author": "Unknown",
+          "content": "Introducing LangSmith LLM Gateway: runtime governance for AI agents with spend limits, PII redaction, and trace continuity, built directly into LangSmith.",
+          "contentSnippet": "Introducing LangSmith LLM Gateway: runtime governance for AI agents with spend limits, PII redaction, and trace continuity, built directly into LangSmith.",
+          "guid": "https://www.langchain.com/blog/introducing-llm-gateway",
+          "categories": [
+            "ContentCategory.NEWS"
+          ],
+          "isoDate": "2026-05-13T17:46:20.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Zihang Huang",
+          "title": "Build real-time voice streaming applications with Amazon Nova Sonic and WebRTC",
+          "link": "https://aws.amazon.com/blogs/machine-learning/build-real-time-voice-streaming-applications-with-amazon-nova-sonic-and-webrtc/",
+          "pubDate": "Wed, 13 May 2026 17:46:19 GMT",
+          "author": "Zihang Huang",
+          "content": "Building end-to-end live streaming applications with real-time voice interaction presents several challenges. This post introduces a solution based on Amazon Nova 2 Sonic (Nova Sonic) and Amazon Kinesis Video Streams WebRTC (WebRTC) that addresses these challenges. In this post, we’ll walk through the solution architecture, implementation patterns, and two real-world scenario examples.",
+          "contentSnippet": "Building end-to-end live streaming applications with real-time voice interaction presents several challenges. This post introduces a solution based on Amazon Nova 2 Sonic (Nova Sonic) and Amazon Kinesis Video Streams WebRTC (WebRTC) that addresses these challenges. In this post, we’ll walk through the solution architecture, implementation patterns, and two real-world scenario examples.",
+          "guid": "https://aws.amazon.com/blogs/machine-learning/build-real-time-voice-streaming-applications-with-amazon-nova-sonic-and-webrtc/",
+          "categories": [
+            "ContentCategory.TUTORIAL"
+          ],
+          "isoDate": "2026-05-13T17:46:19.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Unknown",
+          "title": "Introducing LangSmith Context Hub",
+          "link": "https://www.langchain.com/blog/introducing-context-hub",
+          "pubDate": "Wed, 13 May 2026 17:45:39 GMT",
+          "author": "Unknown",
+          "content": "Introducing Context Hub in LangSmith: a central place to store, version, and collaborate on the files that shape how your AI agents behave.",
+          "contentSnippet": "Introducing Context Hub in LangSmith: a central place to store, version, and collaborate on the files that shape how your AI agents behave.",
+          "guid": "https://www.langchain.com/blog/introducing-context-hub",
+          "categories": [
+            "ContentCategory.NEWS"
+          ],
+          "isoDate": "2026-05-13T17:45:39.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Unknown",
+          "title": "New in Deep Agents v0.6",
+          "link": "https://www.langchain.com/blog/deep-agents-0-6",
+          "pubDate": "Wed, 13 May 2026 17:45:28 GMT",
+          "author": "Unknown",
+          "content": "Deep Agents 0.6 ships a code interpreter, harness profiles, streaming v3, delta channels, and ContextHub, making agents faster, cheaper, and more scalable.",
+          "contentSnippet": "Deep Agents 0.6 ships a code interpreter, harness profiles, streaming v3, delta channels, and ContextHub, making agents faster, cheaper, and more scalable.",
+          "guid": "https://www.langchain.com/blog/deep-agents-0-6",
+          "categories": [
+            "ContentCategory.NEWS"
+          ],
+          "isoDate": "2026-05-13T17:45:28.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Unknown",
+          "title": "LangSmith Sandboxes are Generally Available",
+          "link": "https://www.langchain.com/blog/langsmith-sandboxes-generally-available",
+          "pubDate": "Wed, 13 May 2026 17:45:19 GMT",
+          "author": "Unknown",
+          "content": "Run AI agents safely with LangSmith Sandboxes (GA): kernel-isolated microVMs with snapshots, parallel forks, service URLs, and auth proxies. Built for coding agents, CI agents, and data pipelines",
+          "contentSnippet": "Run AI agents safely with LangSmith Sandboxes (GA): kernel-isolated microVMs with snapshots, parallel forks, service URLs, and auth proxies. Built for coding agents, CI agents, and data pipelines",
+          "guid": "https://www.langchain.com/blog/langsmith-sandboxes-generally-available",
+          "categories": [
+            "ContentCategory.NEWS"
+          ],
+          "isoDate": "2026-05-13T17:45:19.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Unknown",
+          "title": "Introducing Langsmith Engine",
+          "link": "https://www.langchain.com/blog/introducing-langsmith-engine",
+          "pubDate": "Wed, 13 May 2026 17:43:54 GMT",
+          "author": "Unknown",
+          "content": "LangSmith Engine watches your production traces, clusters failures into named issues, and proposes targeted fixes and eval coverage. Stop manually triaging agent failures.",
+          "contentSnippet": "LangSmith Engine watches your production traces, clusters failures into named issues, and proposes targeted fixes and eval coverage. Stop manually triaging agent failures.",
+          "guid": "https://www.langchain.com/blog/introducing-langsmith-engine",
+          "categories": [
+            "ContentCategory.ENGINEERING"
+          ],
+          "isoDate": "2026-05-13T17:43:54.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Unknown",
+          "title": "Managed Deep Agents: the fastest way to ship a production deep agent",
+          "link": "https://www.langchain.com/blog/introducing-managed-deep-agents",
+          "pubDate": "Wed, 13 May 2026 17:39:40 GMT",
+          "author": "Unknown",
+          "content": "Run deep agents in production with durable execution, sandboxes, tool access, and LangSmith observability, without building the runtime yourself. Now in private beta",
+          "contentSnippet": "Run deep agents in production with durable execution, sandboxes, tool access, and LangSmith observability, without building the runtime yourself. Now in private beta",
+          "guid": "https://www.langchain.com/blog/introducing-managed-deep-agents",
+          "categories": [
+            "ContentCategory.TUTORIAL"
+          ],
+          "isoDate": "2026-05-13T17:39:40.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Amit Arora",
+          "title": "Securing AI agents: How AWS and Cisco AI Defense scale MCP and A2A deployments",
+          "link": "https://aws.amazon.com/blogs/machine-learning/securing-ai-agents-how-aws-and-cisco-ai-defense-scale-mcp-and-a2a-deployments/",
+          "pubDate": "Wed, 13 May 2026 17:33:16 GMT",
+          "author": "Amit Arora",
+          "content": "The Cisco and AWS partnership addresses three challenges enterprises face when scaling AI agents: visibility gaps, security bottlenecks, and compliance risks. In this post, we explore how you can overcome AI security challenges through automated scanning and unified governance.",
+          "contentSnippet": "The Cisco and AWS partnership addresses three challenges enterprises face when scaling AI agents: visibility gaps, security bottlenecks, and compliance risks. In this post, we explore how you can overcome AI security challenges through automated scanning and unified governance.",
+          "guid": "https://aws.amazon.com/blogs/machine-learning/securing-ai-agents-how-aws-and-cisco-ai-defense-scale-mcp-and-a2a-deployments/",
+          "categories": [
+            "ContentCategory.ENGINEERING"
+          ],
+          "isoDate": "2026-05-13T17:33:16.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Genta Watanabe",
+          "title": "Fine-tune LLM with Databricks Unity Catalog and Amazon SageMaker AI",
+          "link": "https://aws.amazon.com/blogs/machine-learning/fine-tune-llm-with-databricks-unity-catalog-and-amazon-sagemaker-ai/",
+          "pubDate": "Wed, 13 May 2026 17:22:42 GMT",
+          "author": "Genta Watanabe",
+          "content": "In this post, we demonstrate how to build a secure, complete LLM fine-tuning workflow that integrates Unity Catalog with Amazon SageMaker AI using Amazon EMR Serverless for preprocessing. The solution shows how to securely access governed data, maintain lineage across services, fine-tune the Ministral-3-3B-Instruct model, and register trained artifacts back into Unity Catalog. With this approach, you can continue using your existing services while preserving central governance, tracking data lin",
+          "contentSnippet": "In this post, we demonstrate how to build a secure, complete LLM fine-tuning workflow that integrates Unity Catalog with Amazon SageMaker AI using Amazon EMR Serverless for preprocessing. The solution shows how to securely access governed data, maintain lineage across services, fine-tune the Ministral-3-3B-Instruct model, and register trained artifacts back into Unity Catalog. With this approach, you can continue using your existing services while preserving central governance, tracking data lin",
+          "guid": "https://aws.amazon.com/blogs/machine-learning/fine-tune-llm-with-databricks-unity-catalog-and-amazon-sagemaker-ai/",
+          "categories": [
+            "ContentCategory.TUTORIAL"
+          ],
+          "isoDate": "2026-05-13T17:22:42.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Maxwell Zeff, Paresh Dave",
+          "title": "OpenAI Brings Its Ass to Court",
+          "link": "https://www.wired.com/story/musk-altman-trial-ass-statue-evidence/",
+          "pubDate": "Wed, 13 May 2026 17:08:01 GMT",
+          "author": "Maxwell Zeff, Paresh Dave",
+          "content": "In Musk v. Altman, the company sought to show the jury a remarkable trophy as physical proof of Elon Musk’s concerning behavior.",
+          "contentSnippet": "In Musk v. Altman, the company sought to show the jury a remarkable trophy as physical proof of Elon Musk’s concerning behavior.",
+          "guid": "https://www.wired.com/story/musk-altman-trial-ass-statue-evidence/",
+          "categories": [
+            "ContentCategory.NEWS"
+          ],
+          "isoDate": "2026-05-13T17:08:01.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Mahnoor Javed",
+          "title": "Exploring Patterns of Survival from the Titanic Dataset",
+          "link": "https://towardsdatascience.com/exploring-patterns-of-survival-from-the-titanic-dataset/",
+          "pubDate": "Wed, 13 May 2026 16:46:36 GMT",
+          "author": "Mahnoor Javed",
+          "content": "A beginner's tutorial on exploratory data analysis using Pandas, Matplolib, and Seaborn The post Exploring Patterns of Survival from the Titanic Dataset appeared first on Towards Data Science .",
+          "contentSnippet": "A beginner's tutorial on exploratory data analysis using Pandas, Matplolib, and Seaborn The post Exploring Patterns of Survival from the Titanic Dataset appeared first on Towards Data Science .",
+          "guid": "https://towardsdatascience.com/exploring-patterns-of-survival-from-the-titanic-dataset/",
+          "categories": [
+            "ContentCategory.TUTORIAL"
+          ],
+          "isoDate": "2026-05-13T16:46:36.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Tim Fernholz",
+          "title": "Who trusts Sam Altman?",
+          "link": "https://techcrunch.com/2026/05/13/who-trusts-sam-altman/",
+          "pubDate": "Wed, 13 May 2026 16:31:04 GMT",
+          "author": "Tim Fernholz",
+          "content": "\"I believe I am an honest and trustworthy business person,\" Altman testified in federal court.",
+          "contentSnippet": "\"I believe I am an honest and trustworthy business person,\" Altman testified in federal court.",
+          "guid": "https://techcrunch.com/2026/05/13/who-trusts-sam-altman/",
+          "categories": [
+            "ContentCategory.NEWS"
+          ],
+          "isoDate": "2026-05-13T16:31:04.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Russell Brandom",
+          "title": "Origin Lab raises $8M to help video game companies sell data to world-model builders",
+          "link": "https://techcrunch.com/2026/05/13/origin-lab-raises-8m-to-help-video-game-companies-sell-data-to-world-model-builders/",
+          "pubDate": "Wed, 13 May 2026 16:22:01 GMT",
+          "author": "Russell Brandom",
+          "content": "Origin Lab will serve as a marketplace where AI labs can buy high-quality licensed data, and video-game companies can sell it.",
+          "contentSnippet": "Origin Lab will serve as a marketplace where AI labs can buy high-quality licensed data, and video-game companies can sell it.",
+          "guid": "https://techcrunch.com/2026/05/13/origin-lab-raises-8m-to-help-video-game-companies-sell-data-to-world-model-builders/",
+          "categories": [
+            "ContentCategory.NEWS"
+          ],
+          "isoDate": "2026-05-13T16:22:01.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Lucas Ropek",
+          "title": "Anthropic courts a new kind of customer: small business owners",
+          "link": "https://techcrunch.com/2026/05/13/anthropic-courts-a-new-kind-of-customer-small-business-owners/",
+          "pubDate": "Wed, 13 May 2026 16:00:00 GMT",
+          "author": "Lucas Ropek",
+          "content": "Anthropic is looking to broaden its customer base from larger enterprise customers to smaller and mid-sized businesses.",
+          "contentSnippet": "Anthropic is looking to broaden its customer base from larger enterprise customers to smaller and mid-sized businesses.",
+          "guid": "https://techcrunch.com/2026/05/13/anthropic-courts-a-new-kind-of-customer-small-business-owners/",
+          "categories": [
+            "ContentCategory.NEWS"
+          ],
+          "isoDate": "2026-05-13T16:00:00.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Zach Winn | MIT News",
+          "title": "Researchers “reprogram” materials by quickly rearranging their atoms",
+          "link": "https://news.mit.edu/2026/researchers-reprogram-materials-quickly-rearranging-their-atoms-0513",
+          "pubDate": "Wed, 13 May 2026 15:00:00 GMT",
+          "author": "Zach Winn | MIT News",
+          "content": "A new method for precisely moving columns of individual atoms within a material could give rise to exotic quantum properties.",
+          "contentSnippet": "A new method for precisely moving columns of individual atoms within a material could give rise to exotic quantum properties.",
+          "guid": "https://news.mit.edu/2026/researchers-reprogram-materials-quickly-rearranging-their-atoms-0513",
+          "categories": [
+            "ContentCategory.RESEARCH"
+          ],
+          "isoDate": "2026-05-13T15:00:00.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Lauren Forristal",
+          "title": "Amazon launches an AI shopping assistant for the search bar, powered by Alexa+",
+          "link": "https://techcrunch.com/2026/05/13/amazon-launches-an-ai-shopping-assistant-for-the-search-bar-powered-by-alexa/",
+          "pubDate": "Wed, 13 May 2026 14:59:32 GMT",
+          "author": "Lauren Forristal",
+          "content": "Alexa for Shopping is a new personalized AI shopping assistant in the Amazon search bar that replaces its Rufus assistant.",
+          "contentSnippet": "Alexa for Shopping is a new personalized AI shopping assistant in the Amazon search bar that replaces its Rufus assistant.",
+          "guid": "https://techcrunch.com/2026/05/13/amazon-launches-an-ai-shopping-assistant-for-the-search-bar-powered-by-alexa/",
+          "categories": [
+            "ContentCategory.NEWS"
+          ],
+          "isoDate": "2026-05-13T14:59:32.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Shittu Olumide",
+          "title": "How AI Agents Will Transform Data Science Work in 2026",
+          "link": "https://www.kdnuggets.com/how-ai-agents-will-transform-data-science-work-in-2026",
+          "pubDate": "Wed, 13 May 2026 14:00:38 GMT",
+          "author": "Shittu Olumide",
+          "content": "Discover how AI agents will revolutionize data science in 2026, and learn why they won't replace you but will make you a faster, smarter analyst.",
+          "contentSnippet": "Discover how AI agents will revolutionize data science in 2026, and learn why they won't replace you but will make you a faster, smarter analyst.",
+          "guid": "https://www.kdnuggets.com/how-ai-agents-will-transform-data-science-work-in-2026",
+          "categories": [
+            "ContentCategory.NEWS"
+          ],
+          "isoDate": "2026-05-13T14:00:38.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Russell Brandom",
+          "title": "Anthropic now has more business customers than OpenAI, according to Ramp data",
+          "link": "https://techcrunch.com/2026/05/13/anthropic-now-has-more-business-customers-than-openai-according-to-ramp-data/",
+          "pubDate": "Wed, 13 May 2026 14:00:00 GMT",
+          "author": "Russell Brandom",
+          "content": "For the first time, Anthropic has more verified business customers than OpenAI, according to this month’s AI Index from the fintech firm Ramp.",
+          "contentSnippet": "For the first time, Anthropic has more verified business customers than OpenAI, according to this month’s AI Index from the fintech firm Ramp.",
+          "guid": "https://techcrunch.com/2026/05/13/anthropic-now-has-more-business-customers-than-openai-according-to-ramp-data/",
+          "categories": [
+            "ContentCategory.NEWS"
+          ],
+          "isoDate": "2026-05-13T14:00:00.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Ivan Mehta",
+          "title": "WhatsApp adds an incognito mode in Meta AI chats",
+          "link": "https://techcrunch.com/2026/05/13/whatsapp-adds-an-incognito-mode-in-meta-ai-chats/",
+          "pubDate": "Wed, 13 May 2026 14:00:00 GMT",
+          "author": "Ivan Mehta",
+          "content": "Meta said these incognito conversations are not saved, and messages will disappear by default once you close the chat.",
+          "contentSnippet": "Meta said these incognito conversations are not saved, and messages will disappear by default once you close the chat.",
+          "guid": "https://techcrunch.com/2026/05/13/whatsapp-adds-an-incognito-mode-in-meta-ai-chats/",
+          "categories": [
+            "ContentCategory.NEWS"
+          ],
+          "isoDate": "2026-05-13T14:00:00.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "TechCrunch Events",
+          "title": "Introducing the 6 stages at TechCrunch Disrupt 2026 — built for today’s tougher startup market",
+          "link": "https://techcrunch.com/2026/05/13/introducing-the-6-stages-of-techcrunch-disrupt-2026-built-for-todays-tougher-startup-market/",
+          "pubDate": "Wed, 13 May 2026 14:00:00 GMT",
+          "author": "TechCrunch Events",
+          "content": "From October 13-15, TechCrunch Disrupt 2026 will feature 200+ sessions across six stages, led by 250+ tech leaders shaping the industry today. Register now to save up to $410, plus 50% off a second pass.",
+          "contentSnippet": "From October 13-15, TechCrunch Disrupt 2026 will feature 200+ sessions across six stages, led by 250+ tech leaders shaping the industry today. Register now to save up to $410, plus 50% off a second pass.",
+          "guid": "https://techcrunch.com/2026/05/13/introducing-the-6-stages-of-techcrunch-disrupt-2026-built-for-todays-tougher-startup-market/",
+          "categories": [
+            "ContentCategory.NEWS"
+          ],
+          "isoDate": "2026-05-13T14:00:00.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Lily Hay Newman",
+          "title": "WhatsApp Adds Meta AI Chats That Are Built to Be Fully Private",
+          "link": "https://www.wired.com/story/whatsapp-incognito-chat-meta-ai/",
+          "pubDate": "Wed, 13 May 2026 14:00:00 GMT",
+          "author": "Lily Hay Newman",
+          "content": "The company says its new Incognito Chat allows you to use its AI chatbot without anyone else—including Meta—being able to access your conversations.",
+          "contentSnippet": "The company says its new Incognito Chat allows you to use its AI chatbot without anyone else—including Meta—being able to access your conversations.",
+          "guid": "https://www.wired.com/story/whatsapp-incognito-chat-meta-ai/",
+          "categories": [
+            "ContentCategory.NEWS"
+          ],
+          "isoDate": "2026-05-13T14:00:00.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Ferran Alia",
+          "title": "What’s the Best Way to Brainwash an LLM?",
+          "link": "https://towardsdatascience.com/whats-the-best-way-to-brainwash-an-llm/",
+          "pubDate": "Wed, 13 May 2026 13:30:00 GMT",
+          "author": "Ferran Alia",
+          "content": "I spent a weekend trying to convince a language model it was C-3PO. Here's what actually worked. The post What’s the Best Way to Brainwash an LLM? appeared first on Towards Data Science .",
+          "contentSnippet": "I spent a weekend trying to convince a language model it was C-3PO. Here's what actually worked. The post What’s the Best Way to Brainwash an LLM? appeared first on Towards Data Science .",
+          "guid": "https://towardsdatascience.com/whats-the-best-way-to-brainwash-an-llm/",
+          "categories": [
+            "ContentCategory.NEWS"
+          ],
+          "isoDate": "2026-05-13T13:30:00.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Sarah Perez",
+          "title": "Poppy debuts a proactive AI assistant to help organize your digital life",
+          "link": "https://techcrunch.com/2026/05/13/poppy-debuts-a-proactive-ai-assistant-to-help-organize-your-digital-life/",
+          "pubDate": "Wed, 13 May 2026 13:27:09 GMT",
+          "author": "Sarah Perez",
+          "content": "Poppy is an AI-powered app that connects your calendar, email, messages, and other services to surface reminders, suggestions, and tasks based on what’s happening in your life.",
+          "contentSnippet": "Poppy is an AI-powered app that connects your calendar, email, messages, and other services to surface reminders, suggestions, and tasks based on what’s happening in your life.",
+          "guid": "https://techcrunch.com/2026/05/13/poppy-debuts-a-proactive-ai-assistant-to-help-organize-your-digital-life/",
+          "categories": [
+            "ContentCategory.NEWS"
+          ],
+          "isoDate": "2026-05-13T13:27:09.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "NVIDIA Writers",
+          "title": "NVIDIA, Ineffable Intelligence Team Up to Build the Future of Reinforcement Learning Infrastructure",
+          "link": "https://blogs.nvidia.com/blog/ineffable-intelligence-reinforcement-learning-infrastructure/",
+          "pubDate": "Wed, 13 May 2026 13:00:57 GMT",
+          "author": "NVIDIA Writers",
+          "content": "Reinforcement-learning agents — AI systems that learn by trial and error — can convert computation into new knowledge. That’s the focus of a new engineering-level collaboration between NVIDIA and Ineffable Intelligence, the London-based AI lab founded by AlphaGo architect David Silver in the wake of Ineffable’s emergence from stealth last week. “The next frontier of […]",
+          "contentSnippet": "Reinforcement-learning agents — AI systems that learn by trial and error — can convert computation into new knowledge. That’s the focus of a new engineering-level collaboration between NVIDIA and Ineffable Intelligence, the London-based AI lab founded by AlphaGo architect David Silver in the wake of Ineffable’s emergence from stealth last week. “The next frontier of […]",
+          "guid": "https://blogs.nvidia.com/blog/ineffable-intelligence-reinforcement-learning-infrastructure/",
+          "categories": [
+            "ContentCategory.ENGINEERING"
+          ],
+          "isoDate": "2026-05-13T13:00:57.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Abhishek Gore",
+          "title": "Hermes Unlocks Self-Improving AI Agents, Powered by NVIDIA RTX PCs and DGX Spark",
+          "link": "https://blogs.nvidia.com/blog/rtx-ai-garage-hermes-agent-dgx-spark/",
+          "pubDate": "Wed, 13 May 2026 13:00:10 GMT",
+          "author": "Abhishek Gore",
+          "content": "Agentic AI is changing the way users get work done. Following the success of OpenClaw, the community is embracing new open source agentic frameworks. The latest is Hermes Agent, which crossed 140,000 GitHub stars in under three months.",
+          "contentSnippet": "Agentic AI is changing the way users get work done. Following the success of OpenClaw, the community is embracing new open source agentic frameworks. The latest is Hermes Agent, which crossed 140,000 GitHub stars in under three months.",
+          "guid": "https://blogs.nvidia.com/blog/rtx-ai-garage-hermes-agent-dgx-spark/",
+          "categories": [
+            "ContentCategory.NEWS"
+          ],
+          "isoDate": "2026-05-13T13:00:10.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Russell Brandom",
+          "title": "Adaption aims big with AutoScientist, an AI tool that helps models train themselves",
+          "link": "https://techcrunch.com/2026/05/13/adaption-aims-big-with-autoscientist-an-ai-tool-that-helps-models-train-themselves/",
+          "pubDate": "Wed, 13 May 2026 12:11:33 GMT",
+          "author": "Russell Brandom",
+          "content": "Adaption's new AutoScientist tool is designed to let models adapt to specific capabilities quickly through an automated approach to conventional fine-tuning.",
+          "contentSnippet": "Adaption's new AutoScientist tool is designed to let models adapt to specific capabilities quickly through an automated approach to conventional fine-tuning.",
+          "guid": "https://techcrunch.com/2026/05/13/adaption-aims-big-with-autoscientist-an-ai-tool-that-helps-models-train-themselves/",
+          "categories": [
+            "ContentCategory.NEWS"
+          ],
+          "isoDate": "2026-05-13T12:11:33.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Bala Priya C",
+          "title": "Choosing the Right Agentic Design Pattern: A Decision-Tree Approach",
+          "link": "https://machinelearningmastery.com/choosing-the-right-agentic-design-pattern-a-decision-tree-approach/",
+          "pubDate": "Wed, 13 May 2026 12:00:45 GMT",
+          "author": "Bala Priya C",
+          "content": "Most",
+          "contentSnippet": "Most",
+          "guid": "https://machinelearningmastery.com/choosing-the-right-agentic-design-pattern-a-decision-tree-approach/",
+          "categories": [
+            "ContentCategory.NEWS"
+          ],
+          "isoDate": "2026-05-13T12:00:45.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Abid Ali Awan",
+          "title": "10 GitHub Repositories to Master Self-Hosting",
+          "link": "https://www.kdnuggets.com/10-github-repositories-to-master-self-hosting",
+          "pubDate": "Wed, 13 May 2026 12:00:11 GMT",
+          "author": "Abid Ali Awan",
+          "content": "Learn how modern infrastructure works through self-hosting: containers, reverse proxies, monitoring, backups, networking, and systems operations.",
+          "contentSnippet": "Learn how modern infrastructure works through self-hosting: containers, reverse proxies, monitoring, backups, networking, and systems operations.",
+          "guid": "https://www.kdnuggets.com/10-github-repositories-to-master-self-hosting",
+          "categories": [
+            "ContentCategory.NEWS"
+          ],
+          "isoDate": "2026-05-13T12:00:11.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Pratik R",
+          "title": "Building an Evaluation Harness for Production AI Agents: A 12-Metric Framework From 100+ Deployments",
+          "link": "https://towardsdatascience.com/building-an-evaluation-harness-for-production-ai-agents-a-12-metric-framework-from-100-deployments/",
+          "pubDate": "Wed, 13 May 2026 12:00:00 GMT",
+          "author": "Pratik R",
+          "content": "A 12-metric evaluation framework for production AI agents — covering retrieval, generation, agent behavior, and production health. Drawn from 100+ enterprise deployments. The post Building an Evaluation Harness for Production AI Agents: A 12-Metric Framework From 100+ Deployments appeared first on Towards Data Science .",
+          "contentSnippet": "A 12-metric evaluation framework for production AI agents — covering retrieval, generation, agent behavior, and production health. Drawn from 100+ enterprise deployments. The post Building an Evaluation Harness for Production AI Agents: A 12-Metric Framework From 100+ Deployments appeared first on Towards Data Science .",
+          "guid": "https://towardsdatascience.com/building-an-evaluation-harness-for-production-ai-agents-a-12-metric-framework-from-100-deployments/",
+          "categories": [
+            "ContentCategory.TUTORIAL"
+          ],
+          "isoDate": "2026-05-13T12:00:00.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Shaoni Mukherjee",
+          "title": "Inference Routing: Matching Models to Tasks, Not Just Requests",
+          "link": "https://www.digitalocean.com/community/tutorials/inference-routing-model-task-matching",
+          "pubDate": "Wed, 13 May 2026 11:00:00 GMT",
+          "author": "Shaoni Mukherjee",
+          "content": "Stop hardcoding your LLM calls. In this guide, learn how intelligent model routing cuts costs without sacrificing quality",
+          "contentSnippet": "Stop hardcoding your LLM calls. In this guide, learn how intelligent model routing cuts costs without sacrificing quality",
+          "guid": "https://www.digitalocean.com/community/tutorials/inference-routing-model-task-matching",
+          "categories": [
+            "ContentCategory.TUTORIAL"
+          ],
+          "isoDate": "2026-05-13T11:00:00.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Reece Rogers, Kate Knibbs, Sandra Upson",
+          "title": "Submit Your Questions: AI Is Changing Your Job—Now What?",
+          "link": "https://www.wired.com/story/livestream-ai-is-changing-your-job-now-what/",
+          "pubDate": "Wed, 13 May 2026 11:00:00 GMT",
+          "author": "Reece Rogers, Kate Knibbs, Sandra Upson",
+          "content": "Pose your questions ahead of our May 27 livestream AMA, where a panel of WIRED experts will discuss how AI is transforming work.",
+          "contentSnippet": "Pose your questions ahead of our May 27 livestream AMA, where a panel of WIRED experts will discuss how AI is transforming work.",
+          "guid": "https://www.wired.com/story/livestream-ai-is-changing-your-job-now-what/",
+          "categories": [
+            "ContentCategory.NEWS"
+          ],
+          "isoDate": "2026-05-13T11:00:00.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      },
+      {
+        "json": {
+          "creator": "Alessandra Ram",
+          "title": "Meet the Sad Wives of AI",
+          "link": "https://www.wired.com/story/meet-the-sad-wives-of-ai/",
+          "pubDate": "Wed, 13 May 2026 10:00:00 GMT",
+          "author": "Alessandra Ram",
+          "content": "Are you married to a man who’s obsessed with AI? I’m so, so sorry.",
+          "contentSnippet": "Are you married to a man who’s obsessed with AI? I’m so, so sorry.",
+          "guid": "https://www.wired.com/story/meet-the-sad-wives-of-ai/",
+          "categories": [
+            "ContentCategory.NEWS"
+          ],
+          "isoDate": "2026-05-13T10:00:00.000Z"
+        },
+        "pairedItem": [
+          {
+            "item": 0
+          }
+        ]
+      }
+    ],
+    "Code in JavaScript": [
+      {
+        "json": {
+          "output": "PING 1.1.1.1 (1.1.1.1): 56 data bytes\n64 bytes from 1.1.1.1: seq=0 ttl=42 time=9.479 ms\n64 bytes from 1.1.1.1: seq=1 ttl=42 time=15.452 ms\n64 bytes from 1.1.1.1: seq=2 ttl=42 time=9.983 ms\n64 bytes from 1.1.1.1: seq=3 ttl=42 time=11.689 ms\n\n--- 1.1.1.1 ping statistics ---\n4 packets transmitted, 4 packets received, 0% packet loss\nround-trip min/avg/max = 9.479/11.650/15.452 ms\n"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Limit": [
+      {
+        "json": {
+          "creator": "Unknown",
+          "title": "Building a safe, effective sandbox to enable Codex on Windows",
+          "link": "https://openai.com/index/building-codex-windows-sandbox",
+          "pubDate": "Fri, 15 May 2026 00:00:00 GMT",
+          "author": "Unknown",
+          "content": "Learn how OpenAI built a secure sandbox for Codex on Windows, enabling safe, efficient coding agents with controlled file access and network restrictions.",
+          "contentSnippet": "Learn how OpenAI built a secure sandbox for Codex on Windows, enabling safe, efficient coding agents with controlled file access and network restrictions.",
+          "guid": "https://openai.com/index/building-codex-windows-sandbox",
+          "categories": [
+            "ContentCategory.TUTORIAL"
+          ],
+          "isoDate": "2026-05-15T00:00:00.000Z"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      },
+      {
+        "json": {
+          "creator": "Paresh Dave, Lauren Goode, Steven Levy, Zoë Schiffer",
+          "title": "Meta’s New Reality: Record High Profits. Record Low Morale",
+          "link": "https://www.wired.com/story/meta-layoffs-bad-vibes-mark-zuckerberg-ai/",
+          "pubDate": "Thu, 14 May 2026 09:00:00 GMT",
+          "author": "Paresh Dave, Lauren Goode, Steven Levy, Zoë Schiffer",
+          "content": "Next week, Meta is cutting about 10 percent of its staff. WIRED spoke with more than a dozen current and former employees about what it's like inside a company where \"everyone is unhappy.\"",
+          "contentSnippet": "Next week, Meta is cutting about 10 percent of its staff. WIRED spoke with more than a dozen current and former employees about what it's like inside a company where \"everyone is unhappy.\"",
+          "guid": "https://www.wired.com/story/meta-layoffs-bad-vibes-mark-zuckerberg-ai/",
+          "categories": [
+            "ContentCategory.NEWS"
+          ],
+          "isoDate": "2026-05-14T09:00:00.000Z"
+        },
+        "pairedItem": {
+          "item": 1
+        }
+      },
+      {
+        "json": {
+          "creator": "Connie Loizos",
+          "title": "Who decides what AI tells you? Campbell Brown, once Meta’s news chief, has thoughts",
+          "link": "https://techcrunch.com/2026/05/13/who-decides-what-ai-tells-you-campbell-brown-once-metas-news-chief-has-thoughts/",
+          "pubDate": "Thu, 14 May 2026 06:05:31 GMT",
+          "author": "Connie Loizos",
+          "content": "\"The conversation is sort of happening in Silicon Valley around one thing, and a totally different conversation is happening among consumers.\"",
+          "contentSnippet": "\"The conversation is sort of happening in Silicon Valley around one thing, and a totally different conversation is happening among consumers.\"",
+          "guid": "https://techcrunch.com/2026/05/13/who-decides-what-ai-tells-you-campbell-brown-once-metas-news-chief-has-thoughts/",
+          "categories": [
+            "ContentCategory.OPINION"
+          ],
+          "isoDate": "2026-05-14T06:05:31.000Z"
+        },
+        "pairedItem": {
+          "item": 2
+        }
+      },
+      {
+        "json": {
+          "creator": "Asif Razzaq",
+          "title": "Nous Research Releases Token Superposition Training to Speed Up LLM Pre-Training by Up to 2.5x Across 270M to 10B Parameter Models",
+          "link": "https://www.marktechpost.com/2026/05/13/nous-research-releases-token-superposition-training-to-speed-up-llm-pre-training-by-up-to-2-5x-across-270m-to-10b-parameter-models/",
+          "pubDate": "Thu, 14 May 2026 05:46:32 GMT",
+          "author": "Asif Razzaq",
+          "content": "Nous Research releases Token Superposition Training (TST), a two-phase pre-training method that cuts wall-clock training time by up to 2.5x at matched FLOPs by averaging contiguous token embeddings into bags during Phase 1 and reverting to standard next-token prediction in Phase 2 — without changing the model architecture, tokenizer, optimizer, or inference-time behavior. Validated at 270M, 600M, 3B dense, and 10B-A1B MoE scales. The post Nous Research Releases Token Superposition Training to Sp",
+          "contentSnippet": "Nous Research releases Token Superposition Training (TST), a two-phase pre-training method that cuts wall-clock training time by up to 2.5x at matched FLOPs by averaging contiguous token embeddings into bags during Phase 1 and reverting to standard next-token prediction in Phase 2 — without changing the model architecture, tokenizer, optimizer, or inference-time behavior. Validated at 270M, 600M, 3B dense, and 10B-A1B MoE scales. The post Nous Research Releases Token Superposition Training to Sp",
+          "guid": "https://www.marktechpost.com/2026/05/13/nous-research-releases-token-superposition-training-to-speed-up-llm-pre-training-by-up-to-2-5x-across-270m-to-10b-parameter-models/",
+          "categories": [
+            "ContentCategory.RESEARCH"
+          ],
+          "isoDate": "2026-05-14T05:46:32.000Z"
+        },
+        "pairedItem": {
+          "item": 3
+        }
+      },
+      {
+        "json": {
+          "creator": "Marina Temkin",
+          "title": "Clio’s $500M milestone arrives just as Anthropic ups the ante",
+          "link": "https://techcrunch.com/2026/05/13/clios-500m-milestone-arrives-just-as-anthropic-ups-the-ante/",
+          "pubDate": "Thu, 14 May 2026 05:24:39 GMT",
+          "author": "Marina Temkin",
+          "content": "Legal tech startups, including Clio, which just hit $500 million in ARR, are seeing massive customer adoption.",
+          "contentSnippet": "Legal tech startups, including Clio, which just hit $500 million in ARR, are seeing massive customer adoption.",
+          "guid": "https://techcrunch.com/2026/05/13/clios-500m-milestone-arrives-just-as-anthropic-ups-the-ante/",
+          "categories": [
+            "ContentCategory.NEWS"
+          ],
+          "isoDate": "2026-05-14T05:24:39.000Z"
+        },
+        "pairedItem": {
+          "item": 4
+        }
+      }
+    ],
+    "Basic LLM Chain1": [
+      {
+        "json": {
+          "text": "(in Eddy Murphy's voice)\n\n Ahh, ah! Let me tell you somethin'. I got the scoop on the internet. And I'm here to break it down for you. (chuckles)\n\nOkay, okay, okay. I'm lookin' at the stats here. And I'm seein' some good stuff. You got four successful pings, that's like gettin' four A's on a test, baby! (laughs) You're killin' it!\n\nNow, let me tell you what these numbers mean. (clears throat) You got a round-trip time of 9.479 milliseconds, 11.650, and 15.452. That's like me runnin' from the law, minus the drama and the handcuffs. (laughs) It's fast, it's smooth, it's like silk, baby!\n\nAnd the packet loss? Zero! That's like me at a buffet, eatin' all the free food and not gettin' caught. (laughs) You're gettin' all the data you need, nothin' gettin' lost in translation.\n\nSo, to answer your question, is the internet up? (dramatic pause) Absolutely, positively, without a doubt, IT'S UP, BABY! (laughs)"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Basic LLM Chain": [
+      {
+        "json": {
+          "text": "OpenAI built a secure sandbox for their Codex coding agent on Windows, allowing for safe and efficient coding while controlling file access and network restrictions. This sandbox environment enables OpenAI to create controlled coding agents that can operate securely within predetermined limits."
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      },
+      {
+        "json": {
+          "text": "Meta is planning to cut approximately 10% of its staff, a move that reflects ongoing challenges within the company. More than a dozen current and former employees shared their experiences, describing a culture where widespread dissatisfaction is prevalent."
+        },
+        "pairedItem": {
+          "item": 1
+        }
+      },
+      {
+        "json": {
+          "text": "Unfortunately, the article provided does not contain any information. It appears to be a repetition of the same sentence. If you could provide the full article, I would be happy to summarize it in 2 sentences for you."
+        },
+        "pairedItem": {
+          "item": 2
+        }
+      },
+      {
+        "json": {
+          "text": "Here's a 2 sentence summary of the article:\n\nNous Research has released Token Superposition Training (TST), a two-phase pre-training method that can reduce wall-clock training time by up to 2.5x without changing the model architecture or inference-time behavior. TST has been validated on various model scales, including 270M, 600M, 3B dense, and 10B-A1B MoE scales."
+        },
+        "pairedItem": {
+          "item": 3
+        }
+      },
+      {
+        "json": {
+          "text": "Legal tech startups are experiencing significant customer adoption, with Clio being a notable example after reaching $500 million in annual recurring revenue (ARR). Clio's achievement highlights the growing demand for innovative legal technology solutions in the industry."
+        },
+        "pairedItem": {
+          "item": 4
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "RSS Read",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Discord": {
+      "main": [
+        []
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain1": {
+      "main": [
+        [
+          {
+            "node": "Discord1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Discord",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "RSS Read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "1271c32b-8e2b-4c7c-aee9-782a73ee0596",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "64e1fe403164474c47aed69def90c5b20080ba19bab7fe0c796bdf1f6b66976c"
+  },
+  "id": "5wf7j21UqEsjOQHD",
+  "tags": []
+}
